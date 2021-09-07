@@ -1,4 +1,5 @@
 import 'package:card_swiper/card_swiper.dart';
+//Powered by zharka
 import 'package:flutter/material.dart';
 
 class CardSwiper extends StatelessWidget {
@@ -13,7 +14,7 @@ class CardSwiper extends StatelessWidget {
         itemCount: 10,
         layout: SwiperLayout.STACK,
         itemHeight: size.height * 0.6,
-        itemWidth: size.width * 0.7,
+        itemWidth: size.width * 0.6,
         itemBuilder: (BuildContext contex, int index) {
           return GestureDetector(
             onTap: () => Navigator.pushNamed(context, 'details',

@@ -1,3 +1,5 @@
+//Powered by zharka
+
 import 'package:flutter/material.dart';
 
 import 'package:curso_peliculas_v2/src/widgets/widgets.dart';
@@ -13,10 +15,8 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          //TODO: CardSwiper
-          CardSwiper()
-
-          //
+          Container(padding: EdgeInsets.all(10.0), child: CardSwiper()),
+          MovieSlider(),
         ],
       ),
     );
