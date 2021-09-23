@@ -12,14 +12,14 @@ class CastingCards extends StatelessWidget {
         itemCount: 10,
         scrollDirection: Axis.horizontal,
         itemBuilder: (BuildContext context, int index) {
-          return _actorCard();
+          return _ActorCard();
         },
       ),
     );
   }
 }
 
-class _actorCard extends StatelessWidget {
+class _ActorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -41,7 +41,7 @@ class _actorCard extends StatelessWidget {
             height: 3.0,
           ),
           Text(
-            'Movie.nombre muy laergo con apellido',
+            'Movie.nombre muy largo con apellido',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,

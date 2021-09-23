@@ -1,7 +1,38 @@
 //Powered by zharka
+
+import 'package:curso_peliculas_v2/src/models/models.dart';
 import 'package:flutter/material.dart';
 
-class MovieSlider extends StatelessWidget {
+class MovieSlider extends StatefulWidget {
+  final List<Movie> movies;
+  final String? title;
+  final Function onPage;
+
+  MovieSlider({required this.onPage, required this.movies, this.title});
+
+  @override
+  _MovieSliderState createState() => _MovieSliderState();
+}
+
+class _MovieSliderState extends State<MovieSlider> {
+  ScrollController scrollController = new ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 500) {
+        widget.onPage();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -10,28 +41,43 @@ class MovieSlider extends StatelessWidget {
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text(
-                'Populares',
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-              ),
-            ),
+            getTitle(),
             SizedBox(
               height: 5,
             ),
             Expanded(
               child: ListView.builder(
+                  controller: scrollController,
                   scrollDirection: Axis.horizontal,
-                  itemCount: 20,
-                  itemBuilder: (_, int index) => _MoviePoster()),
+                  itemCount: widget.movies.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final popular = widget.movies[index];
+                    return _MoviePoster(popular);
+                  }),
             )
           ]),
     );
   }
+
+  getTitle() {
+    if (widget.title == null) {
+      return Container();
+    } else {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.0),
+        child: Text(
+          this.widget.title.toString(),
+          style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+        ),
+      );
+    }
+  }
 }
 
 class _MoviePoster extends StatelessWidget {
+  final Movie movie;
+  const _MoviePoster(this.movie);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -41,13 +87,13 @@ class _MoviePoster extends StatelessWidget {
       child: Column(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pushNamed(context, 'details',
-                arguments: 'movie-intance'),
+            onTap: () =>
+                Navigator.pushNamed(context, 'details', arguments: movie),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15.0),
               child: FadeInImage(
                 placeholder: AssetImage('assets/no-image.jpg'),
-                image: NetworkImage('https://via.placeholder.com/300x400'),
+                image: NetworkImage(movie.fullPosterPath),
                 width: 110.0,
                 height: 170.0,
                 fit: BoxFit.cover,
@@ -56,7 +102,7 @@ class _MoviePoster extends StatelessWidget {
           ),
           SizedBox(height: 5),
           Text(
-            'El titulo más largo de la historia, de los titulos largos de la historia',
+            movie.title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
