@@ -11,6 +11,8 @@ class MoviesProvider extends ChangeNotifier {
 
   List<Movie> onDisplay = [];
   List<Movie> populars = [];
+
+  Map<int, List<Cast>> casting = {};
   //Contructor de MoviesProvider
   MoviesProvider() {
     print('MoviesProvider Inicializado...');
@@ -19,9 +21,9 @@ class MoviesProvider extends ChangeNotifier {
     this.getPopulars();
   }
 
-  Future<String> getMovieGeneral(String category, int page) async {
-    var url = Uri.https(_baseURL, category,
-        {'api_key': _apikey, 'language': _lenguage, 'page': '$page'});
+  Future<String> getMovieGeneral(String category, [int page = 1]) async {
+    var url = Uri.https(
+        _baseURL, category, {'api_key': _apikey, 'language': _lenguage});
     final request = await http.get(url);
     return request.body;
   }
@@ -38,6 +40,16 @@ class MoviesProvider extends ChangeNotifier {
     final general = await getMovieGeneral('3/movie/now_playing', _page);
     final response = Populars.fromJson(general);
     populars = [...populars, ...response.results];
-    print(_page);
+  }
+
+  Future<List<Cast>> getMoviesCast(int movieId) async {
+    //
+    if (casting.containsKey(movieId)) return casting[movieId]!;
+    print('Haciendo petición http');
+    final general = await getMovieGeneral('3/movie/$movieId/credits');
+    final response = MovieCast.fromJson(general);
+    casting[movieId] = response.cast;
+    //print(casting);
+    return response.cast;
   }
 }
