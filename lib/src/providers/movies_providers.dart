@@ -1,6 +1,7 @@
+//Powered by zharka
 import 'package:curso_peliculas_v2/src/models/models.dart';
+import 'package:curso_peliculas_v2/src/models/searchs.dart';
 import 'package:flutter/material.dart';
-//import 'package:provider/provider.dart' as provider;
 import 'package:http/http.dart' as http;
 
 class MoviesProvider extends ChangeNotifier {
@@ -22,7 +23,7 @@ class MoviesProvider extends ChangeNotifier {
   }
 
   Future<String> getMovieGeneral(String category, [int page = 1]) async {
-    var url = Uri.https(
+    final url = Uri.https(
         _baseURL, category, {'api_key': _apikey, 'language': _lenguage});
     final request = await http.get(url);
     return request.body;
@@ -51,5 +52,13 @@ class MoviesProvider extends ChangeNotifier {
     casting[movieId] = response.cast;
     //print(casting);
     return response.cast;
+  }
+
+  Future<List<Movie>> searchMovies(String query) async {
+    final url = Uri.https(_baseURL, '3/search/movie',
+        {'api_key': _apikey, 'language': _lenguage, 'query': query});
+    final request = await http.get(url);
+    final response = Search.fromJson(request.body);
+    return response.results;
   }
 }
