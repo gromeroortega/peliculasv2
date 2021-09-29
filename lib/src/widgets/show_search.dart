@@ -11,16 +11,25 @@ class ShowSearch extends StatelessWidget {
     return ListView.builder(
       itemCount: results.length,
       itemBuilder: (_, int index) {
+        final movie = results[index];
+        movie.heroId = 'search-${movie.id}';
         return ListTile(
-          leading: FadeInImage(
-              width: 50,
-              height: 100,
-              placeholder: AssetImage('assets/no-image.jpg'),
-              image: NetworkImage(results[index].fullPosterPath)),
-          title: Text(results[index].originalTitle),
-          subtitle: Text(results[index].title),
-          onTap: () => Navigator.pushNamed(context, 'details',
-              arguments: results[index]),
+          leading: Hero(
+            tag: movie.heroId!,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(13),
+              child: FadeInImage(
+                  fit: BoxFit.contain,
+                  width: 50,
+                  height: 100,
+                  placeholder: AssetImage('assets/no-image.jpg'),
+                  image: NetworkImage(movie.fullPosterPath)),
+            ),
+          ),
+          title: Text(movie.originalTitle),
+          subtitle: Text(movie.title),
+          onTap: () =>
+              Navigator.pushNamed(context, 'details', arguments: movie),
         );
       },
     );

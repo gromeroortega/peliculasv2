@@ -14,7 +14,7 @@ class MovieSearch extends SearchDelegate {
     return [
       Row(
         children: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+          //IconButton(onPressed: () {}, icon: Icon(Icons.search)),
           IconButton(onPressed: () => query = '', icon: Icon(Icons.cancel))
         ],
       )
@@ -40,6 +40,7 @@ class MovieSearch extends SearchDelegate {
     if (query.isEmpty) {
       return _EmptyContainer();
     } else {
+      print('Petición');
       final moviesProvider =
           Provider.of<MoviesProvider>(context, listen: false);
       return FutureBuilder(
