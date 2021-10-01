@@ -1,4 +1,7 @@
 //Powered by zharka
+import 'dart:async';
+
+import 'package:curso_peliculas_v2/src/helpers/debouncer.dart';
 import 'package:curso_peliculas_v2/src/models/models.dart';
 import 'package:curso_peliculas_v2/src/models/searchs.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +17,15 @@ class MoviesProvider extends ChangeNotifier {
   List<Movie> populars = [];
 
   Map<int, List<Cast>> casting = {};
+
+  final debouncer = Debouncer(
+    duration: Duration(milliseconds: 500),
+  );
+  //Inicia el Stream
+  final StreamController<List<Movie>> _streamController =
+      new StreamController.broadcast();
+  Stream<List<Movie>> get suggestionStream => this._streamController.stream;
+
   //Contructor de MoviesProvider
   MoviesProvider() {
     print('MoviesProvider Inicializado...');
@@ -41,12 +53,13 @@ class MoviesProvider extends ChangeNotifier {
     final general = await getMovieGeneral('3/movie/now_playing', _page);
     final response = Populars.fromJson(general);
     populars = [...populars, ...response.results];
+    notifyListeners();
   }
 
   Future<List<Cast>> getMoviesCast(int movieId) async {
     //
     if (casting.containsKey(movieId)) return casting[movieId]!;
-    print('Haciendo petición http');
+    //print('Haciendo petición http');
     final general = await getMovieGeneral('3/movie/$movieId/credits');
     final response = MovieCast.fromJson(general);
     casting[movieId] = response.cast;
@@ -60,5 +73,21 @@ class MoviesProvider extends ChangeNotifier {
     final request = await http.get(url);
     final response = Search.fromJson(request.body);
     return response.results;
+  }
+
+  //Método concatena lo tecleado en la búsqueda
+  void getAllQuery(String query) {
+    //Clase deboucer almacena lo que escribe el usuario, mientras lo escribe
+    debouncer.value = '';
+    debouncer.onValue = (value) async {
+      final results = await this.searchMovies(value);
+      this._streamController.add(results);
+      print('Tenemos valor a buscar: $value');
+    };
+    final time = Timer.periodic(Duration(microseconds: 300), (_) {
+      debouncer.value = query;
+    });
+
+    Future.delayed(Duration(microseconds: 301)).then((_) => time.cancel());
   }
 }
